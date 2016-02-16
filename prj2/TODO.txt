@@ -1,0 +1,11 @@
+*Not sure if in_background is working correctly
+
+**Issues with history feature
+*2D array needs to be reset to start ovewriting from the start
+*print_history needs to reset count every time it goes over 10, but the command number needs to stay consistent
+*the print not working accurately such as prints only "echo" when the commmand was "echo test" - probably
+not storing that properly
+
+**Still need to implement: 
+*SIGNALS Ctrl+C triggers history
+*!n to execute the command stored in that index
