@@ -1,0 +1,20 @@
+Basic Functionality:
+- Main runs - calls read command
+- Read command does its thing
+   - take arguments from stdin
+   - tokenize
+   - return
+- Create child process and pass tokenized stuff to child
+- Child runs, parent waits
+
+When *in_background = false
+- Main runs and read command executes
+- Child process runs in background
+
+History feature:
+
+Use cases:
+- User types in "history" on the shell
+- Shell prints last 10 commands used
+   - <Command number> /t <Command>
+   
