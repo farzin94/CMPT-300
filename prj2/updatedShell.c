@@ -127,6 +127,8 @@ int main(int argc, char*argv[]){
       // Get command
       // Use write becausae we need to use read()/write() to work with
       // signals, and they are incompatible with print()
+      currentDir = getcwd(NULL, 0);
+      write(STDOUT_FILENO, currentDir, strlen(currentDir));
       write(STDOUT_FILENO, ">", strlen(">"));
       _Bool in_background = false;
       read_command(input_buffer, tokens, &in_background);
@@ -148,7 +150,6 @@ int main(int argc, char*argv[]){
 				{
         			ret = chdir(tokens[1]);
         			printf( "Directory changed to %s\n", tokens[1]);
-        			//printf("%s", currentDir);
         		}
         		else
         		{
@@ -157,7 +158,6 @@ int main(int argc, char*argv[]){
         			tokens[1] = strcat(tmpDir, tokens[1]);
         			ret = chdir(tokens[1]);
         			//printf("The new token1 is %s\n", tokens[1]);
-        			//printf("%s", currentDir);
         		}
     		}
     		else if (strcmp(tokens[0], "cd") == -1)
