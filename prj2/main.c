@@ -14,6 +14,8 @@
 #define PATH_MAX 4096
 #define HISTORY_DEPTH 10
 
+int count=0;
+
 char history[HISTORY_DEPTH][COMMAND_LENGTH];
 
 /**
@@ -28,23 +30,29 @@ char history[HISTORY_DEPTH][COMMAND_LENGTH];
  * in_background: pointer to a boolean variable. Set to true if user
  * entered an & as their last token; otherwise set to false.
  */
+void add_history(char* tokens[]){
 
- void add_history(char* tokens,char* buff, int count){
     int i=count;
     int j=0;
-    //int k=0;
-    if (strcmp(buff,"") != 0){
-       if (strlen(buff)!=0){
+    int k=0;
+    if (strcmp(tokens[0],"") != 0){
+       if (strlen(tokens[0])!=0){
           if(count>9) i=count-10;
 
-          for(j=0; j<COMMAND_LENGTH; j++){
-             history[i][j] = tokens[j];
-            // k++;
-          }
+         //  while(tokens[k] != NULL){
+         //     for(j=0; j<sizeof(tokens[k]); j++){
+         //     if (tokens[0][j] == '\0') history[i][j] = ' ';
+         //     else history[i][j] = tokens[0][j];
+         //  }
+         //  k++;
+         //  }
+          for(j=0; j<sizeof(tokens); j++){
+             if (tokens[0][j] == '\0') history[i][j] = ' ';
+             else history[i][j] = tokens[0][j];
 
-         //  for (int j=0; j<strlen(buff); j++){
-         //     history[i][j] = buff[j];
-         // }
+          }
+         //  //history[i][j] = '\0';
+
        }
     }
  }
@@ -65,7 +73,7 @@ char history[HISTORY_DEPTH][COMMAND_LENGTH];
  * @param count [description]
  * @param buff  [description]
  */
-void print_history(char* tokens, int count, char *buff){
+void print_history(){
 
    int n=1;
    if(count>10){
@@ -73,7 +81,7 @@ void print_history(char* tokens, int count, char *buff){
    }
    while(n<=count){
       printf("%d\t", n);
-      for(int j=0; j<sizeof(tokens); j++){
+      for(int j=0; j<sizeof(history[(n-1)%10]); j++){
         printf ("%c", history[(n-1)%10][j]);
         //j++;
       }
@@ -99,6 +107,11 @@ int tokenize_command(char* buff, char* tokens[]){
       local_buff = strtok(NULL, " \t\r\a");
    }
    tokens[i] = NULL;
+
+  //  for (int j = 1; j < i; j++)
+  //  {
+  //    tokens[j][-1] = '\0';
+  // }
 
    return i;
 
@@ -134,6 +147,7 @@ void read_command(char *buff, char *tokens[], _Bool *in_background){
       *in_background = true;
       tokens[token_count - 1] = 0;
    }
+
 }
 
 /**
@@ -144,7 +158,7 @@ int main(int argc, char*argv[]){
    char input_buffer[COMMAND_LENGTH];
    char *tokens[NUM_TOKENS];
 
-   int count=0;
+   //int count=0;
    int result;
 
    //For Built-in commands
@@ -171,13 +185,11 @@ int main(int argc, char*argv[]){
       // }
       //    printf("%s", input_buffer);
 
-      if (strlen(input_buffer)!=0){
-         add_history(tokens[0], input_buffer, count);
+      if(tokens[0] != NULL){
+
+         add_history(tokens);
          //retrieve_history(input_buffer, tokens);
          count++;
-      }
-
-      if(tokens[0] != NULL){
 
    	 	if (strcmp(tokens[0], "exit") == 0){
    	 	   //printf("the current is %s\n", tokens[0]);
@@ -189,8 +201,8 @@ int main(int argc, char*argv[]){
             continue;
          }
          else if (strcmp(tokens[0], "history") == 0){
-
-            print_history(tokens[0], count, input_buffer);
+            print_history();
+            continue;
          }
    		else if (strcmp(tokens[0], "cd") == 0){
             currentDir = (getcwd(NULL, 0));
@@ -210,7 +222,7 @@ int main(int argc, char*argv[]){
        //  		perror(tokens[1]);
          // }
 
-         else {
+
 
             pid_t child = fork();
 
@@ -234,7 +246,7 @@ int main(int argc, char*argv[]){
             }
 
          }
-      }
+
       /**
        * Steps for Basic Shell:
        * 1. Fork a child process
