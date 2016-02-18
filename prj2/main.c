@@ -29,27 +29,28 @@ char history[HISTORY_DEPTH][COMMAND_LENGTH];
  * entered an & as their last token; otherwise set to false.
  */
 
-void add_history(char* buff, int count){
-   int i=count;
-   if (strcmp(buff,"") != 0){
-      if (strlen(buff)!=0){
-         for (int j=0; j<strlen(buff); j++){
-            if(i>=10)i=0;
-            history[i][j] = buff[j];
-         }
-      }
-   }
-}
+ void add_history(char* buff, int count){
+    int i=count;
+    if (strcmp(buff,"") != 0){
+       if (strlen(buff)!=0){
+          for (int j=0; j<strlen(buff); j++){
+             if(i>10)i=0;
+             history[i][j] = buff[j];
+          }
+       }
+    }
+ }
 
-void print_history(int count, char *buff){
-   for (int k=0; k<10; k++){
-      printf("%d\t", k);
-      for (int l=0; l<strlen(buff); l++){
-         printf ("%c", history[k][l]);
-      }
-      printf("\n");
-   }
-}
+ void print_history(int count, char *buff){
+
+    for (int k=1; k<=count; k++){
+       printf("%d\t", k);
+       for (int l=0; l<=strlen(buff); l++){
+          printf ("%c", history[k-1][l]);
+       }
+       printf("\n");
+    }
+ }
 
 int tokenize_command(char* buff, char* tokens[]){
 
