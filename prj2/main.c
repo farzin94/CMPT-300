@@ -30,69 +30,56 @@ char history[HISTORY_DEPTH][COMMAND_LENGTH];
  * in_background: pointer to a boolean variable. Set to true if user
  * entered an & as their last token; otherwise set to false.
  */
-void add_history(char* tokens[]){
+
+
+void add_history(char* tokens[], char* buff){
 
     int i=count;
     int j=0;
     int k=0;
-    if (strcmp(tokens[0],"") != 0){
+
+    int len = sizeof(tokens[0]);
+    if (tokens[0]){
        if (strlen(tokens[0])!=0){
           if(count>9) i=count-10;
 
-         //  while(tokens[k] != NULL){
-         //     for(j=0; j<sizeof(tokens[k]); j++){
-         //     if (tokens[0][j] == '\0') history[i][j] = ' ';
-         //     else history[i][j] = tokens[0][j];
-         //  }
-         //  k++;
-         //  }
-          for(j=0; j<sizeof(tokens); j++){
-             if (tokens[0][j] == '\0') history[i][j] = ' ';
-             else history[i][j] = tokens[0][j];
+          for(j=0; j<COMMAND_LENGTH; j++){
+
+             if (tokens[0][j] == '\0'){
+                history[i][j] = ' ';
+                k++;
+             }
+             else if(tokens[k] == NULL){
+                break;
+             }
+             else
+               history[i][j] = tokens[0][j];
 
           }
-         //  //history[i][j] = '\0';
-
        }
     }
  }
 
-// void retrieve_history(char* buff, char* tokens[]){
-//
-//
-//
-// }
-
-/**
- * TODO:
- * The numbers are being printed correctly i.e the last 10 numbers
- * are printed with correct numbering.
- * Corresponding commands are wrong. Weird shit comes out.
- * Im not sure if its print_history or add_history that does this.
- * I'll keep working on it for now.
- * @param count [description]
- * @param buff  [description]
- */
 void print_history(){
 
    int n=1;
-   if(count>10){
-      n=count-10;
+
+   if(count>9){
+      n=count-9;
    }
+   char string[n];
+   char string2[sizeof(history)];
    while(n<=count){
-      printf("%d\t", n);
-      for(int j=0; j<sizeof(history[(n-1)%10]); j++){
-        printf ("%c", history[(n-1)%10][j]);
-        //j++;
+      sprintf(string, "%d\t", n);
+      write(STDOUT_FILENO, string, strlen(string));
+      for(int j=0; j<COMMAND_LENGTH; j++){
+         string2[j] = history[(n-1)%10][j];
       }
-      // for (int l=0; l<strlen(buff); l++){
-      //  printf ("%c", history[(n-1)%10][l]);
-      // }
+      write (STDOUT_FILENO, string2 ,strlen(string2));
       printf("\n");
       n++;
    }
 }
-
 
 int tokenize_command(char* buff, char* tokens[]){
 
@@ -108,14 +95,11 @@ int tokenize_command(char* buff, char* tokens[]){
    }
    tokens[i] = NULL;
 
-  //  for (int j = 1; j < i; j++)
-  //  {
-  //    tokens[j][-1] = '\0';
-  // }
-
    return i;
 
 }
+
+
 
 void read_command(char *buff, char *tokens[], _Bool *in_background){
 
@@ -165,7 +149,14 @@ int main(int argc, char*argv[]){
    char *currentDir;
    char *tmpDir;
    char* cwd;
-   char blah[PATH_MAX + 1];
+   char dir_holder[PATH_MAX + 1];
+
+   struct sigaction handler;
+	handler.sa_handler = handle_SIGINT;
+	handler.sa_flags = 0;
+	sigemptyset(&handler.sa_mask);
+	sigaction(SIGINT, &handler, NULL);
+
 
    while (true){
       // Get command
@@ -187,7 +178,7 @@ int main(int argc, char*argv[]){
 
       if(tokens[0] != NULL){
 
-         add_history(tokens);
+         add_history(tokens, input_buffer);
          //retrieve_history(input_buffer, tokens);
          count++;
 
@@ -196,7 +187,7 @@ int main(int argc, char*argv[]){
             return 0;
          }
          else if (strcmp(tokens[0], "pwd") == 0){
-            cwd = getcwd(blah, (PATH_MAX + 1));
+            cwd = getcwd(dir_holder, (PATH_MAX + 1));
             printf("%s\n", cwd);
             continue;
          }
@@ -204,8 +195,18 @@ int main(int argc, char*argv[]){
             print_history();
             continue;
          }
-   		else if (strcmp(tokens[0], "cd") == 0){
+         else if (strchr(tokens[0], '!')){
+           int line = atoi(&tokens[0][1]);
+           printf("line number %d\n", line);
+           printf("history %s\n", history[line]);
+           read_command(history[line], tokens, &in_background);
+         }
+         else if (strcmp(tokens[0], "cd") == 0){
             currentDir = (getcwd(NULL, 0));
+            if (tokens[1] == NULL)
+            {
+            	continue;
+            }
             if (strchr(tokens[1], '/')){
         			chdir(tokens[1]);
         			printf( "Directory changed to %s\n", tokens[1]);
