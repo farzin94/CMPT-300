@@ -29,17 +29,31 @@ char history[HISTORY_DEPTH][COMMAND_LENGTH];
  * entered an & as their last token; otherwise set to false.
  */
 
- void add_history(char* buff, int count){
+ void add_history(char* tokens,char* buff, int count){
     int i=count;
+    int j=0;
+    //int k=0;
     if (strcmp(buff,"") != 0){
        if (strlen(buff)!=0){
-          if(i>9)i=i-10;
-          for (int j=0; j<strlen(buff); j++){
-             history[i][j] = buff[j];
-         }
+          if(count>9) i=count-10;
+
+          for(j=0; j<COMMAND_LENGTH; j++){
+             history[i][j] = tokens[j];
+            // k++;
+          }
+
+         //  for (int j=0; j<strlen(buff); j++){
+         //     history[i][j] = buff[j];
+         // }
        }
     }
  }
+
+// void retrieve_history(char* buff, char* tokens[]){
+//
+//
+//
+// }
 
 /**
  * TODO:
@@ -51,27 +65,26 @@ char history[HISTORY_DEPTH][COMMAND_LENGTH];
  * @param count [description]
  * @param buff  [description]
  */
- void print_history(int count, char *buff){
+void print_history(char* tokens, int count, char *buff){
 
-    int k=0;
-    int n=1;
-    //TODO:Doesnt account for when count is greater than 20
-    if(count>10){
-      //k=count-10;
+   int n=1;
+   if(count>10){
       n=count-10;
-    }
-    while(n<=count){
-       printf("%d\t", n);
-       if (count>9) k=0;
-       for (int l=0; l<strlen(buff); l++){
-          printf ("%c", history[k][l]);
-       }
-       printf("\n");
+   }
+   while(n<=count){
+      printf("%d\t", n);
+      for(int j=0; j<sizeof(tokens); j++){
+        printf ("%c", history[(n-1)%10][j]);
+        //j++;
+      }
+      // for (int l=0; l<strlen(buff); l++){
+      //  printf ("%c", history[(n-1)%10][l]);
+      // }
+      printf("\n");
+      n++;
+   }
+}
 
-       k++;
-       n++;
-    }
- }
 
 int tokenize_command(char* buff, char* tokens[]){
 
@@ -148,10 +161,19 @@ int main(int argc, char*argv[]){
       write(STDOUT_FILENO, currentDir, strlen(currentDir));
       write(STDOUT_FILENO, ">", strlen(">"));
       _Bool in_background = false;
+      //printf("input_buffer1: %s ", input_buffer);
       read_command(input_buffer, tokens, &in_background);
 
+      // int i=1;
+      // strcpy(input_buffer, tokens[0]);
+      // while (tokens[i]!=NULL){
+      //
+      // }
+      //    printf("%s", input_buffer);
+
       if (strlen(input_buffer)!=0){
-         add_history(input_buffer, count);
+         add_history(tokens[0], input_buffer, count);
+         //retrieve_history(input_buffer, tokens);
          count++;
       }
 
@@ -166,8 +188,9 @@ int main(int argc, char*argv[]){
             printf("%s\n", cwd);
             continue;
          }
-         else if (strcmp(input_buffer, "history") == 0){
-            print_history(count, input_buffer);
+         else if (strcmp(tokens[0], "history") == 0){
+
+            print_history(tokens[0], count, input_buffer);
          }
    		else if (strcmp(tokens[0], "cd") == 0){
             currentDir = (getcwd(NULL, 0));
@@ -195,7 +218,7 @@ int main(int argc, char*argv[]){
                if (execvp(tokens[0], tokens) < 0) {
                   write(STDOUT_FILENO, "Error: exec failed\n", strlen("Error: exec failed\n"));
                 }
-               exit(1);
+               exit(-1);
             }
 
             else if(child < 0){
