@@ -2,37 +2,11 @@
 ## Check Unix Programming Tools handout for more info.
 
 # Define what compiler to use and the flags.
-CC=cc
-CXX=CC
-CCFLAGS= -g -std=c99 -Wall -Werror
+CC=gcc
+CXX=g++
+CCFLAGS= -g -Wall -Werror
 
-# A rule in Makefile has the form:
-#
-# target: dependencies
-#	command
-#
-# where "target" and "dependencies" are files (most of the time).
-# These means that if "target" does not exist or the modification
-# date of the dependencies are older than the modification time of
-# "target" then "command" is executed.
-#
-# For example, the rule
-#
-# list.o : list.c
-#	$(CC) -c $(CCFLAGS) list.c
-#
-# means that if list.o does not exist, or if list.c is older
-# than list.o, then execute "$(CC) -c $(CCFLAGS) list.c".
-#
-# The goal of make is to execute the minimum set of commands that
-# are necessary to build the target files. i.e., it does not rebuild
-# files that it expects need not be rebuilt because they have not changed.
-#
-# Usually, the first target in a Makefile is called "all".
-# The dependencies of "all" are the files (or make targets) that we want to build.
-#
-
-all: main
+all: shell_sol
 
 # Compile all .c files into .o files
 # % matches all (like * in a command)
@@ -42,13 +16,11 @@ all: main
 
 
 
-# Build test_list if necessary
-main: main.o
-	$(CC) -o main main.o
+shell: shell.o
+	$(CC) -o shell shell.o $(CCFLAGS)
 
-main: main
-	./main
-
+shell_sol: shell_sol.o
+	$(CC) -o shell_sol shell_sol.o $(CCFLAGS)
 
 clean:
-	rm -f core *.o test_list
+	rm -f core *.o shell shell_sol

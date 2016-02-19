@@ -6,7 +6,7 @@
 #include<unistd.h>
 #include<errno.h>
 #include<sys/wait.h>
-
+#include<signal.h>
 #include<assert.h>
 
 #define COMMAND_LENGTH 1024
@@ -15,8 +15,7 @@
 #define HISTORY_DEPTH 10
 
 int count=0;
-
-char history[HISTORY_DEPTH][COMMAND_LENGTH];
+char history[HISTORY_DEPTH][COMMAND_LENGTH] = {"", ""};
 
 /**
  * Read a command from the keyboard into the buffer "buff" and
@@ -38,26 +37,28 @@ void add_history(char* tokens[], char* buff){
     int j=0;
     int k=0;
 
-    int len = sizeof(tokens[0]);
-    if (tokens[0]){
+    // len = sizeof(tokens[0]);
+    if (strcmp(tokens[0],"")!=0){
        if (strlen(tokens[0])!=0){
-          if(count>9) i=count-10;
 
+
+          memset(history[i], 0, strlen(history[i]));
           for(j=0; j<COMMAND_LENGTH; j++){
-
+             if(i>9) i=i-10;
              if (tokens[0][j] == '\0'){
                 history[i][j] = ' ';
                 k++;
              }
-             else if(tokens[k] == NULL){
-                break;
-             }
              else
                history[i][j] = tokens[0][j];
 
+            if(tokens[k] == NULL){
+               break;
+            }
           }
        }
     }
+
  }
 
 void print_history(){
@@ -68,13 +69,16 @@ void print_history(){
       n=count-9;
    }
    char string[n];
-   char string2[sizeof(history)];
+   char string2[sizeof(history[(n-1)%10])];
    while(n<=count){
       sprintf(string, "%d\t", n);
       write(STDOUT_FILENO, string, strlen(string));
-      for(int j=0; j<COMMAND_LENGTH; j++){
-         string2[j] = history[(n-1)%10][j];
-      }
+      int j=0;
+      //while(history[(n-1)%10][j] != '\0'){
+       for(j=0; j<COMMAND_LENGTH; j++){
+          string2[j] = history[(n-1)%10][j];
+          //j++;
+       }
       write (STDOUT_FILENO, string2 ,strlen(string2));
       printf("\n");
       n++;
@@ -134,6 +138,17 @@ void read_command(char *buff, char *tokens[], _Bool *in_background){
 
 }
 
+void handle_SIGINT()
+{
+   //signal(sig, SIG_IGN);
+	write(STDOUT_FILENO, "\n", strlen("\n"));
+	print_history();
+	//write(STDOUT_FILENO, print_history, strlen(print_history));
+	//write(STDOUT_FILENO, "\n", 1);
+	//exit(0);
+
+}
+
 /**
  * Main and Execute commands
  */
@@ -151,12 +166,13 @@ int main(int argc, char*argv[]){
    char* cwd;
    char dir_holder[PATH_MAX + 1];
 
-   /*struct sigaction handler;
-	handler.sa_handler = handle_SIGINT;
-	handler.sa_flags = 0;
-	sigemptyset(&handler.sa_mask);
-	sigaction(SIGINT, &handler, NULL);
-*/
+   //  struct sigaction handler;
+   //handler.sa_handler = handle_SIGINT;
+   //handler.sa_flags = 0;
+   //	sigemptyset(&handler.sa_mask);
+   //	sigaction(SIGINT, &handler, NULL);
+
+   //signal(SIGINT, handle_SIGINT);
 
    while (true){
       // Get command
@@ -178,30 +194,61 @@ int main(int argc, char*argv[]){
 
       if(tokens[0] != NULL){
 
-         add_history(tokens, input_buffer);
-         //retrieve_history(input_buffer, tokens);
-         count++;
+
+         if (strcmp(tokens[0], "!!")==0){
+            if (history[count-1] < 0){
+               write(STDIN_FILENO, "Command not found", strlen("Command not found"));
+               write(STDIN_FILENO, "\n", strlen("\n"));
+               continue;
+            }
+            else {
+               write(STDOUT_FILENO, history[count-1], strlen(history[count-1]) );
+               write(STDIN_FILENO, "\n", strlen("\n"));
+               tokenize_command(history[count-1], tokens);
+            }
+         }
+
+         if (strchr(tokens[0], '!')){
+           int line = atoi(&tokens[0][1]);
+           if (line <= 0 || line < count-9 || line > count){
+             write(STDIN_FILENO, "Command not found", strlen("Command not found"));
+             write(STDIN_FILENO, "\n", strlen("\n"));
+             continue;
+           }
+           else{
+             write(STDIN_FILENO, history[(line-1)%10], strlen(history[(line-1)%10]) ) ;
+            write(STDIN_FILENO, "\n", strlen("\n"));
+            tokenize_command(history[(line-1)%10], tokens);
+           }
+         }
+
+         if (strcmp(tokens[0], "!!")!= 0){
+            if(strcmp(tokens[0], "!n")!=0){
+               add_history(tokens, input_buffer);
+               count++;
+            }
+         }
 
    	 	if (strcmp(tokens[0], "exit") == 0){
-   	 	   //printf("the current is %s\n", tokens[0]);
             return 0;
          }
-         else if (strcmp(tokens[0], "pwd") == 0){
+         if (strcmp(tokens[0], "pwd") == 0){
             cwd = getcwd(dir_holder, (PATH_MAX + 1));
             printf("%s\n", cwd);
             continue;
          }
-         else if (strcmp(tokens[0], "history") == 0){
+         if (strcmp(tokens[0], "history") == 0){
             print_history();
             continue;
          }
-         else if (strchr(tokens[0], '!')){
-           int line = atoi(&tokens[0][1]);
-           printf("line number %d\n", line);
-           printf("history %s\n", history[line]);
-           read_command(history[line], tokens, &in_background);
-         }
-         else if (strcmp(tokens[0], "cd") == 0){
+
+         // else if (strchr(tokens[0], '!')){
+         //   int line = atoi(&tokens[0][1]);
+         //   printf("line number %d\n", line);
+         //   printf("history %s\n", history[line]);
+         //  // read_command(history[line], tokens, &in_background);
+         // }
+         if (strcmp(tokens[0], "cd") == 0){
             currentDir = (getcwd(NULL, 0));
             if (tokens[1] == NULL)
             {
@@ -219,11 +266,6 @@ int main(int argc, char*argv[]){
         		}
             continue;
  		   }
-    	// 	else if (strcmp(tokens[0], "cd") == -1){
-       //  		perror(tokens[1]);
-         // }
-
-
 
             pid_t child = fork();
 
