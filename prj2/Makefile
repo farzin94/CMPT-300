@@ -20,7 +20,7 @@ shell: shell.o
 	$(CC) -o shell shell.o $(CCFLAGS)
 
 shell_sol: shell_sol.o
-	$(CC) -o shell_sol shell_sol.o $(CCFLAGS)
+	$(CC) -o shell shell_sol.o $(CCFLAGS)
 
 clean:
 	rm -f core *.o shell shell_sol
