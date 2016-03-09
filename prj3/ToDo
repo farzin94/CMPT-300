@@ -1,0 +1,16 @@
+One group of threads will model candy factories which generate candy one at a
+time and insert the candy into the bounded buffer. Another group of threads will
+model kids which eat candy one a time1 from the bounded buffer.
+
+ Your program, called candykids, will accept three arguments:
+• ./candykids <#factories> <#kids> <#seconds>
+
+1)Create main stuff (extract args + initialize modules)
+2)Create Candy Factory (that will create candy that will be stored in bounded buffer)
+3)Buffer 
+4)Create kids thread
+5)Everything needs to be created first
+6)Factory waits on candy to be produced
+7)Consume candy while there is candy in BB
+8)Kids get canceled and join thread.
+9)Make statistics (at some phase)
