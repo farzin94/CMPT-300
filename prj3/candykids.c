@@ -2,9 +2,17 @@
 #include <stdlib.h>
 #include <pthread.h>
 #include <unistd.h>
+#include <stdbool.h>
+#include <time.h>
 
 //#include "bbuff.c"
 #include "stats.c"
+
+/**
+ * REMINDER: ARGUMENTS GO IN THE COMMAND LINE OR YOU SEGFAULT
+ */
+
+_Bool stop_thread = false;
 
 typedef struct {
    int factory_number;
@@ -12,8 +20,18 @@ typedef struct {
 } candy_t;
 
 void *factoryFunc(void *p){
+	
 	int fac = *((int *) p);
-	printf ("fac: %d\n", fac);
+	srand(time(NULL));
+	while(!stop_thread){
+		int ran_sec = rand()%3;
+		
+		printf("\tFactory %d ships candy & waits %ds\n", fac, ran_sec );
+		sleep(ran_sec);
+		
+	}
+	printf("Candy-factory %d done\n", fac);
+	//printf ("fac: %d\n", fac);
 	
 	return NULL;
 }
@@ -29,7 +47,7 @@ int main(int argc, char *argv[]) {
 	int sec=0;
 	
 	if (argc == 0){
-		printf("Invalid input\n");
+		printf("Error: Invalid input\n");
 	}
 
 	if (argc > 0 && argc <= 4){
@@ -39,7 +57,7 @@ int main(int argc, char *argv[]) {
 	}
 	
 	if (factory <= 0 || kid <= 0 || sec <= 0){
-		printf("Error: invalid input");
+		printf("Error: Invalid input\n");
 	}
 	
 	printf("%d %d %d\n", factory , kid , sec);
@@ -51,7 +69,6 @@ int main(int argc, char *argv[]) {
 		//printf("factory_num: %d\n", factory_num[i]);
 	}
 		
-
 	for (int i = 0; i < factory; i++) {
 		if(pthread_create(&factory_thread[i], NULL, factoryFunc, &factory_num[i])) {
 			printf ("Create pthread error!\n");
@@ -69,10 +86,13 @@ int main(int argc, char *argv[]) {
 		}
 	}
 	
-	for (int p=0; p<sec; p++){
+	
+	for (int p=1 p<sec; p++){
 		sleep(1);
-		printf("Time %ds\n", p+1);
+		printf("Time %ds\n", p);
 	}
+	
+	stop_thread = true;
 	
 	for (int x=0; x<factory; x++){
 		pthread_join(factory_thread[x], NULL);
