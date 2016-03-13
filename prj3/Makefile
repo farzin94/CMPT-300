@@ -1,12 +1,10 @@
-## This is a simple Makefile with lost of comments
-## Check Unix Programming Tools handout for more info.
-
 # Define what compiler to use and the flags.
 CC=gcc
 CXX=g++
-CCFLAGS= -g -Wall -Werror
+CCFLAGS= -g -Wall -Werror -std=c99
 
-all: shell_sol
+SRC = candykids.c 
+
 
 # Compile all .c files into .o files
 # % matches all (like * in a command)
@@ -14,13 +12,8 @@ all: shell_sol
 %.o : %.c
 	$(CC) -c $(CCFLAGS) $<
 
-
-
-shell: shell.o
-	$(CC) -o shell shell.o $(CCFLAGS)
-
-shell_sol: shell_sol.o
-	$(CC) -o shell shell_sol.o $(CCFLAGS)
+candykids: $(SRC)
+	gcc -o candy $(CCFLAGS) $(SRC)
 
 clean:
-	rm -f core *.o shell shell_sol
+	rm -f candy *.o
