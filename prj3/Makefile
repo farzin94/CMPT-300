@@ -1,7 +1,7 @@
 # Define what compiler to use and the flags.
 CC=gcc
 CXX=g++
-CCFLAGS= -g -Wall -Werror -std=c99
+CCFLAGS= -g -Wall -Werror -std=c99 -pthread
 
 SRC = candykids.c 
 
