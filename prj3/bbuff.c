@@ -8,7 +8,7 @@ void* candyBuff[BUFFER_SIZE];
 sem_t empty;
 sem_t full;
 sem_t mutex;
-int emptyVal;
+int emptyVal=0;
 
 void bbuff_init(void){
 
@@ -37,11 +37,11 @@ Enqueue(item);
 
 
 void* bbuff_blocking_extract(void){
+	
 	sem_wait(&mutex);
 	sem_wait(&empty);  
 	sem_post(&full);  
 	sem_post(&mutex);
-	
 }
 /*Consumer() {
  fullBuffers.P(); // Check if there’s a coke
@@ -53,6 +53,9 @@ item = Dequeue();
 }
 */
 
+/**
+ * Returns true when bounded buffer is empty
+ */
 _Bool bbuff_is_empty(void){
 	sem_getvalue(&empty, &emptyVal);
 	if (emptyVal > 0)

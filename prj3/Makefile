@@ -1,9 +1,9 @@
 # Define what compiler to use and the flags.
 CC=gcc
 CXX=g++
-CCFLAGS= -g -Wall -Werror -std=c99 -pthread
+CCFLAGS= -g -std=gnu99 -pthread -lrt
 
-SRC = candykids.c 
+SRC = candykids.c
 
 
 # Compile all .c files into .o files
@@ -13,7 +13,7 @@ SRC = candykids.c
 	$(CC) -c $(CCFLAGS) $<
 
 candykids: $(SRC)
-	gcc -o candy $(CCFLAGS) $(SRC)
+	$(CC) -o candy $(CCFLAGS) $(SRC)
 
 clean:
 	rm -f candy *.o
