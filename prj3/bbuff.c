@@ -9,6 +9,7 @@ sem_t empty;
 sem_t full;
 sem_t mutex;
 int emptyVal;
+int fullVal;
 
 void bbuff_init(void){
 	sem_init(&empty, 0, 0); // MAX buffers are empty to begin with...
@@ -18,15 +19,16 @@ void bbuff_init(void){
 
 void bbuff_blocking_insert(void* candyp){
 
-	//Should emptyVal be incremented?
-	sem_wait(&mutex);
 	sem_wait(&full);
-	sem_getvalue(&empty, &emptyVal);
+	sem_wait(&mutex);
+//DEBUGGING STUFF
+/*sem_getvalue(&empty, &emptyVal);
+sem_getvalue(&full, &fullVal);
+printf("fullVal: %d\n", fullVal);
+printf("emptyVal: %d\n", emptyVal);*/
 	candyBuff[emptyVal] = candyp;
-	printf("emptyVal: %d\n", emptyVal);
-	sem_post(&empty);
 	sem_post(&mutex);
-	
+	sem_post(&empty);
 }
 	
 	
@@ -43,16 +45,18 @@ Enqueue(item);
 
 void* bbuff_blocking_extract(void){
 	
-	//is item being dequeued?
-	sem_wait(&mutex);
-	void* candyp = candyBuff[emptyVal];
+	void* candyp;
 	sem_wait(&empty); 
-	
-	
-	//candyBuff[emptyVal] = 
-	sem_post(&full);  
+	sem_wait(&mutex);
+//DEBUGGING STUFF	
+/*sem_getvalue(&empty, &emptyVal);
+sem_getvalue(&full, &fullVal);
+printf("fullVal EXTRACT: %d\n", fullVal);
+printf("emptyVal EXTRACT: %d\n", emptyVal);*/
+	candyp = candyBuff[emptyVal];
+	candyBuff[emptyVal] == NULL;
 	sem_post(&mutex);
-	
+	sem_post(&full);  
 	return candyp;
 }
 /*Consumer() {
