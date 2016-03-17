@@ -22,10 +22,17 @@ void bbuff_blocking_insert(void* candyp){
 	sem_wait(&full);
 	sem_wait(&mutex);
 //DEBUGGING STUFF
+
  sem_getvalue(&empty, &emptyVal);
 // sem_getvalue(&full, &fullVal);
 // printf("fullVal: %d\n", fullVal);
  printf("emptyVal: %d\n", emptyVal);
+
+/*sem_getvalue(&empty, &emptyVal);
+sem_getvalue(&full, &fullVal);
+printf("fullVal: %d\n", fullVal);
+printf("emptyVal: %d\n", emptyVal);*/
+
 	candyBuff[emptyVal] = candyp;
 	sem_post(&mutex);
 	sem_post(&empty);
@@ -49,12 +56,19 @@ void* bbuff_blocking_extract(void){
 	sem_wait(&empty); 
 	sem_wait(&mutex);
 //DEBUGGING STUFF	
- sem_getvalue(&empty, &emptyVal);
+
+	sem_getvalue(&empty, &emptyVal);
 // sem_getvalue(&full, &fullVal);
 // printf("fullVal EXTRACT: %d\n", fullVal);
-printf("emptyVal EXTRACT: %d\n", emptyVal);
+	printf("emptyVal EXTRACT: %d\n", emptyVal);
 	candyp = candyBuff[emptyVal];
- 
+
+/*sem_getvalue(&empty, &emptyVal);
+sem_getvalue(&full, &fullVal);
+printf("fullVal EXTRACT: %d\n", fullVal);
+printf("emptyVal EXTRACT: %d\n", emptyVal);*/
+	candyp = candyBuff[emptyVal];
+	candyBuff[emptyVal] == NULL;
 	sem_post(&mutex);
 	sem_post(&full);  
 	return candyp;

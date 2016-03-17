@@ -32,8 +32,8 @@ void bbuff_blocking_insert(void* candyp){
 	sem_post(&mutex);
 	sem_post(&full);
 }
-
-
+	
+	
 
 /*Producer(item) {
  emptyBuffers.P(); // Wait until space
@@ -46,16 +46,16 @@ Enqueue(item);
 
 
 void* bbuff_blocking_extract(void){
-
+	
 	void* candyp;
-	sem_wait(&full);
+	sem_wait(&full); 
 	sem_wait(&mutex);
 	count--;
 	candyp = candyBuff[out];
 	candyBuff[out] == NULL;
 	out = (out+1) % BUFFER_SIZE;
 	sem_post(&mutex);
-	sem_post(&empty);
+	sem_post(&empty);  
 	return candyp;
 }
 /*Consumer() {
@@ -72,8 +72,8 @@ item = Dequeue();
  * Returns true when bounded buffer is empty
  */
 _Bool bbuff_is_empty(void){
-	sem_getvalue(&empty, &emptyVal);
-	if (emptyVal > 0)
+	//sem_getvalue(&empty, &emptyVal);
+	if (count > 0)
 		{
 			return false;
 		}
