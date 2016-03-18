@@ -35,10 +35,20 @@ void* numZero(void *p){
 	return NULL;
 }
 
+/**
+ * 1. - 0.002519ms 
+ * 2. -
+ * 3. -
+ * 4. - 0.345827ms
+ */
 int main(){
+	
+	struct timespec start, end; //Initialize time
 	
 	pthread_t thread1;
 	pthread_t thread2;
+	
+	clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &start); //start timer
 	
 	pthread_create(&thread1, NULL, numOne , NULL);
 	pthread_create(&thread2, NULL, numZero , NULL);
@@ -47,6 +57,14 @@ int main(){
 	
 	pthread_join(thread1, NULL);
 	pthread_join(thread2, NULL);
+	
+	//end=clock();
+
+	clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &end); //end timer
+	
+	double result = (end.tv_sec - start.tv_sec)* 1e3 + (end.tv_nsec - start.tv_nsec) * 1e-6; //calculate time
+	printf("%fms : Minimal Function Call\n", result );
+	
 	return 0;
 }
 /**
@@ -57,12 +75,14 @@ changing it to 0. Thread #1 keeps waiting for num to
 become 0 and changing it to 1.
 ◦ Figure out the rest
 
-
-
-
-
+/**
+ * 
  * 1. real	0m0.002s
  * user	0m0.000s
  * sys	0m0.000s
  * 
+ * 4.real 0m0.004s
+ * user	0m0.000s
+ * sys	0m0.000s
+
  */
