@@ -51,7 +51,6 @@ void stats_record_produced(int factory_number){
  * @param delay_in_ms    [description]
  */
 void stats_record_consumed(int factory_number, double delay_in_ms){
-	printf("DELAY %f\n", delay_in_ms);
 	stats[factory_number].candyEaten++;
 	stats[factory_number].tot_delay = stats[factory_number].tot_delay + delay_in_ms;
 	
@@ -70,6 +69,8 @@ void stats_record_consumed(int factory_number, double delay_in_ms){
  * [stats_display description]
  */
 void stats_display(void){
+	
+	_Bool match = true;
 	double avg_delay[global_num_producers]; 
 
 	for (int k = 0; k <global_num_producers; k++)
@@ -88,7 +89,7 @@ void stats_display(void){
 		}
 	}
 	//Title Row
-	printf("%8s%10s%30s%30s%30s%30s\n", "Factory#", "Made", "#Eaten", "Min Delay[ms]", "Avg Delay[ms]", "Max Delay[ms]");
+	printf("%8s%10s%30s%30s%30s%30s\n", "Factory#", "#Made", "#Eaten", "Min Delay[ms]", "Avg Delay[ms]", "Max Delay[ms]");
 	//Data Row
 	for (int i = 0; i<global_num_producers; i++)
 	{
@@ -97,7 +98,12 @@ void stats_display(void){
 	for (int j = 0; j < global_num_producers; j++)
 	{
 		if (stats[j].candyMade != stats[j].candyEaten){
-			printf("Candy Made does not match Candy Eaten on factory: %d\n", j);
+			match = false;
+			break;
 		}
+	}
+	
+	if (!match) {
+		printf("ERROR:Mismatch between number made and eaten.\n");
 	}
 }

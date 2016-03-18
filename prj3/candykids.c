@@ -153,8 +153,7 @@ int main(int argc, char *argv[]) {
 		printf("Waiting for all candy to be consumed\n");
 		sleep(1);
 	}
-	
-	printf("bye\n");
+
 	//------8. Stop kid threads----------------------
 	for (int i = 0; i < kid; i++) {
 		pthread_cancel(kid_thread[i]);
