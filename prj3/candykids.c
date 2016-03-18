@@ -41,7 +41,8 @@ void *factoryFunc(void *p){
 	int fac = *((int *) p);
 	srand(time(NULL));
 	
-	
+	//Should count how many candies are being created by each factory
+	int countProduced=0;
 	while(!stop_thread){
 		int rand_sec = rand()%3;
 		
@@ -50,9 +51,11 @@ void *factoryFunc(void *p){
 		candy_t* candy = malloc(sizeof(candy_t));
 		candy->factory_number = fac;
 		candy->time_stamp_in_ms = current_time_in_ms();
-
+		
 		
 		bbuff_blocking_insert(candy);
+		countProduced++;
+		//printf("candy created by %d = %d\n", fac, count);
 
 		sleep(rand_sec);	
 		free(candy);
@@ -60,6 +63,7 @@ void *factoryFunc(void *p){
 	}
 	//
 	//assert(!bbuff_is_empty());
+	printf("candy created by %d = %d\n", fac, countProduced);
 	printf("Candy-factory %d done\n", fac);
 	//printf ("fac: %d\n", fac);
 	
@@ -70,16 +74,19 @@ void *kidFunc(void *p){
 	
 	srand(time(NULL));
 	
+	int countConsumed=0;
 	while(1){
 		
 		//printf("*\n");
 		candy_t* candy = bbuff_blocking_extract();
-		
-		printf("fac num: %d\n", candy->factory_number);
-		printf("time: %f\n", candy->time_stamp_in_ms);   
+		if (candy) countConsumed++;
+		/*printf("fac num: %d\n", candy->factory_number);
+		printf("time: %f\n", candy->time_stamp_in_ms);*/   
+		//printf("candy consumed from %d = %d\n", candy->factory_number, countConsumed);
 		sleep(rand()%1);
 	}
-
+	
+	//printf("candy consumed from %d = %d\n", fac, count);
 	return NULL;
 }
 
