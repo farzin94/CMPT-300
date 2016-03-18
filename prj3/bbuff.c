@@ -22,12 +22,6 @@ void bbuff_blocking_insert(void* candyp){
 	sem_wait(&full);
 	sem_wait(&mutex);
 //DEBUGGING STUFF
-
- sem_getvalue(&empty, &emptyVal);
-// sem_getvalue(&full, &fullVal);
-// printf("fullVal: %d\n", fullVal);
- printf("emptyVal: %d\n", emptyVal);
-
 /*sem_getvalue(&empty, &emptyVal);
 sem_getvalue(&full, &fullVal);
 printf("fullVal: %d\n", fullVal);
@@ -56,13 +50,6 @@ void* bbuff_blocking_extract(void){
 	sem_wait(&empty); 
 	sem_wait(&mutex);
 //DEBUGGING STUFF	
-
-	sem_getvalue(&empty, &emptyVal);
-// sem_getvalue(&full, &fullVal);
-// printf("fullVal EXTRACT: %d\n", fullVal);
-	printf("emptyVal EXTRACT: %d\n", emptyVal);
-	candyp = candyBuff[emptyVal];
-
 /*sem_getvalue(&empty, &emptyVal);
 sem_getvalue(&full, &fullVal);
 printf("fullVal EXTRACT: %d\n", fullVal);
@@ -87,11 +74,12 @@ item = Dequeue();
  * Returns true when bounded buffer is empty
  */
 _Bool bbuff_is_empty(void){
-	sem_getvalue(&empty, &emptyVal);
-	//printf("%d\n", emptyVal);
-	if (emptyVal > 0)
+	//sem_getvalue(&empty, &emptyVal);
+	//sem_getvalue(&full, &fullVal);
+	//printf("%d\n", fullVal-emptyVal);
+	if (emptyVal == 0)
 		{
-			return false;
+			return true;
 		}
-	return true;
+	return false;
 }
