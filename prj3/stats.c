@@ -92,8 +92,11 @@ printf("%8s%10s%30s%30s%30s%30s\n", "Factory#", "Made", "#Eaten", "Min Delay[ms]
 for (int i = 0; i<global_num_producers; i++)
 {
 	printf("%8d%10d%30d%30f%30f%30f\n", i, stats[i].candyMade, stats[i].candyEaten, stats[i].min_delay, avg_delay[i], stats[i].max_delay);
-	if (stats[i].candyMade != stats[i].candyEaten){
-	printf("Error: Candy Made does not match Candy Eaten on factory: %d\n", i);
+}
+for (int j = 0; j < global_num_producers; j++)
+{
+	if (stats[j].candyMade != stats[j].candyEaten){
+		printf("Candy Made does not match Candy Eaten on factory: %d\n", j);
 	}
 }
 }
