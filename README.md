@@ -1,3 +1,5 @@
 # Basic-Shell
 
-http://www.cs.sfu.ca/~ashriram/courses/2016/CS300/assignments/assignments/Project2-Shell.pdf
+This is more than just a basic shell now. Also the shell is kinda broken 
+
+Also includes a candy factory which is less broken
