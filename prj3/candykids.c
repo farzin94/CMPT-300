@@ -10,15 +10,7 @@
 #include "bbuff.c"
 #include "stats.c"
 
-//#define _POSIX_C_SOURCE 199609L
-
-//struct timespec now; 
-/**
- * REMINDER: ARGUMENTS GO IN THE COMMAND LINE OR YOU SEGFAULT
- */
-
 _Bool stop_thread = false;
-//pthread_mutex_t lock;
 
 
 typedef struct {
@@ -40,8 +32,7 @@ void *factoryFunc(void *p){
 	
 	int fac = *((int *) p);
 	srand(time(NULL));
-	
-	//Should count how many candies are being created by each factory
+
 	int countProduced=0;
 	while(!stop_thread){
 		int rand_sec = rand()%3;
@@ -56,19 +47,14 @@ void *factoryFunc(void *p){
 		bbuff_blocking_insert(candy);
 		countProduced++;
 		stats_record_produced(fac);
-		//printf("candy created by %d = %d\n", fac, count);
 
 		sleep(rand_sec);	
 		free(candy);
 			
 	}
-	//
-	//assert(!bbuff_is_empty());
-	printf("candy created by %d = %d\n", fac, countProduced);
+	//printf("candy created by %d = %d\n", fac, countProduced);
 	printf("Candy-factory %d done\n", fac);
-	//printf ("fac: %d\n", fac);
 	
-	//return NULL;
 }
 
 void *kidFunc(void *p){
@@ -78,17 +64,12 @@ void *kidFunc(void *p){
 	int countConsumed=0;
 	while(1){
 		
-		//printf("*\n");
 		candy_t* candy = bbuff_blocking_extract();
 		if (candy){
 			countConsumed++;
 			stats_record_consumed(candy->factory_number, candy->time_stamp_in_ms);
 		}
 		
-		
-		/*printf("fac num: %d\n", candy->factory_number);
-		printf("time: %f\n", candy->time_stamp_in_ms);*/   
-		//printf("candy consumed from %d = %d\n", candy->factory_number, countConsumed);
 		sleep(rand()%1);
 	}
 	
@@ -100,17 +81,11 @@ int main(int argc, char *argv[]) {
 
 	bbuff_init();
 	stats_init(atoi(argv[1]));
-	//sem_init(&empty, 0, 0); // MAX buffers are empty to begin with...
-	//sem_init(&full, 0, BUFFER_SIZE);    // ... and 0 are full
-	//sem_init(&mutex, 0, 1);
 	
 	int factory=0;
 	int kid=0;
 	int sec=0;
 	
-	
-	
-	//assert(bbuff_is_empty());
 	//-----1. Extract arguments-----------------
 	if (argc == 0){
 		printf("Error: Invalid input\n");
@@ -127,8 +102,6 @@ int main(int argc, char *argv[]) {
 		printf("Error: Invalid input\n");
 		exit(1);
 	}
-	
-	printf("factory: %d, kids: %d, seconds: %d\n", factory , kid , sec);
 	
 	 //-----2. Initialize modules-------------------
 
@@ -174,18 +147,9 @@ int main(int argc, char *argv[]) {
 	for (int x=0; x<factory; x++){
 		pthread_join(factory_thread[x],  NULL);
 	}
-	/*int i;
-	pthread_join(factory_thread[0],  (void **)&i);
-			printf("%d\n", i);
-	pthread_join(factory_thread[1],  (void **)&i);
-			printf("%d\n", i);
-	pthread_join(factory_thread[2],  (void **)&i);
-			printf("%d\n", i);*/
-		printf("hi\n");
 	
 	//------7. Wait until no more candy--------------
-	//assert(!bbuff_is_empty());
-	while (!bbuff_is_empty()){
+	while (bbuff_is_empty() == false){
 		printf("Waiting for all candy to be consumed\n");
 		sleep(1);
 	}
@@ -199,7 +163,9 @@ int main(int argc, char *argv[]) {
 
 	//------9. Print statistics-----------------
 	stats_display();
+	
 	//------10. Cleanup any allocated memory---------
-	 
-	 return 0;
+	stats_cleanup();
+	
+	return 0;
 }

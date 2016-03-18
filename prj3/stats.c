@@ -33,7 +33,8 @@ void stats_init(int num_producers){
  * [stats_cleanup description]
  */
 void stats_cleanup(void){
-	//free(stats);
+
+	if (stats) free(stats);
 }
 
 /**
@@ -69,34 +70,34 @@ void stats_record_consumed(int factory_number, double delay_in_ms){
  * [stats_display description]
  */
 void stats_display(void){
-double avg_delay[global_num_producers]; 
+	double avg_delay[global_num_producers]; 
 
-for (int k = 0; k <global_num_producers; k++)
-{
-	if (stats[k].min_delay == DBL_MAX)
+	for (int k = 0; k <global_num_producers; k++)
 	{
-		stats[k].min_delay = 0;
+		if (stats[k].min_delay == DBL_MAX)
+		{
+			stats[k].min_delay = 0;
+		}
+		if (stats[k].candyEaten != 0)
+		{
+			avg_delay[k] = (stats[k].tot_delay) / (stats[k].candyEaten);
+		}
+		else
+		{
+			avg_delay[k] = 0;
+		}
 	}
-	if (stats[k].candyEaten != 0)
+	//Title Row
+	printf("%8s%10s%30s%30s%30s%30s\n", "Factory#", "Made", "#Eaten", "Min Delay[ms]", "Avg Delay[ms]", "Max Delay[ms]");
+	//Data Row
+	for (int i = 0; i<global_num_producers; i++)
 	{
-		avg_delay[k] = (stats[k].tot_delay) / (stats[k].candyEaten);
+		printf("%8d%10d%30d%30f%30f%30f\n", i, stats[i].candyMade, stats[i].candyEaten, stats[i].min_delay, avg_delay[i], stats[i].max_delay);
 	}
-	else
+	for (int j = 0; j < global_num_producers; j++)
 	{
-		avg_delay[k] = 0;
+		if (stats[j].candyMade != stats[j].candyEaten){
+			printf("Candy Made does not match Candy Eaten on factory: %d\n", j);
+		}
 	}
-}
-//Title Row
-printf("%8s%10s%30s%30s%30s%30s\n", "Factory#", "Made", "#Eaten", "Min Delay[ms]", "Avg Delay[ms]", "Max Delay[ms]");
-//Data Row
-for (int i = 0; i<global_num_producers; i++)
-{
-	printf("%8d%10d%30d%30f%30f%30f\n", i, stats[i].candyMade, stats[i].candyEaten, stats[i].min_delay, avg_delay[i], stats[i].max_delay);
-}
-for (int j = 0; j < global_num_producers; j++)
-{
-	if (stats[j].candyMade != stats[j].candyEaten){
-		printf("Candy Made does not match Candy Eaten on factory: %d\n", j);
-	}
-}
 }
