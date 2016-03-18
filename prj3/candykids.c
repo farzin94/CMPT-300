@@ -55,6 +55,7 @@ void *factoryFunc(void *p){
 		
 		bbuff_blocking_insert(candy);
 		countProduced++;
+		stats_record_produced(fac);
 		//printf("candy created by %d = %d\n", fac, count);
 
 		sleep(rand_sec);	
@@ -79,7 +80,12 @@ void *kidFunc(void *p){
 		
 		//printf("*\n");
 		candy_t* candy = bbuff_blocking_extract();
-		if (candy) countConsumed++;
+		if (candy){
+			countConsumed++;
+			stats_record_consumed(candy->factory_number, candy->time_stamp_in_ms);
+		}
+		
+		
 		/*printf("fac num: %d\n", candy->factory_number);
 		printf("time: %f\n", candy->time_stamp_in_ms);*/   
 		//printf("candy consumed from %d = %d\n", candy->factory_number, countConsumed);
@@ -92,10 +98,11 @@ void *kidFunc(void *p){
 
 int main(int argc, char *argv[]) {
 
-	//bbuff_init();
-	sem_init(&empty, 0, 0); // MAX buffers are empty to begin with...
-	sem_init(&full, 0, BUFFER_SIZE);    // ... and 0 are full
-	sem_init(&mutex, 0, 1);
+	bbuff_init();
+	stats_init(atoi(argv[1]));
+	//sem_init(&empty, 0, 0); // MAX buffers are empty to begin with...
+	//sem_init(&full, 0, BUFFER_SIZE);    // ... and 0 are full
+	//sem_init(&mutex, 0, 1);
 	
 	int factory=0;
 	int kid=0;
@@ -191,8 +198,8 @@ int main(int argc, char *argv[]) {
 	}
 
 	//------9. Print statistics-----------------
+	stats_display();
 	//------10. Cleanup any allocated memory---------
-	//pthread_mutex_destroy(&lock);
 	 
 	 return 0;
 }
