@@ -12,10 +12,8 @@
  * @return            [0 when successful, -EINVAL if size <= 0,
  * -EFAULT if any problems access info_array or num_filled.]
  */
-long sys_process_ancestors(
+asmlinkage long sys_process_ancestors(
 	struct process_info info_array[],
 	long size,
 	long *num_filled
-){
-	
-}
+);
