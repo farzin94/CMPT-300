@@ -1,0 +1,22 @@
+
+1. Create cs300 folder in linux-stable
+2. Create file that contains the syscall (syscall.c or something)
+3. Create makefile containing names of object files
+	obj-y := cs300_test.o mytest.o otherthing.o
+4. Change main Makefile to add cs300 folder
+	core-y += kernel/ mm/ fs/ ipc/ security/ crypto/ block/ cs300/
+5. Add 360 i386 cs300_test sys_cs300_test to arch/x86/syscalls/syscall_32.tbl
+6. Rebuild kernel
+	make -j1
+
+7. Create test application outside linux-stable
+	#include <sys/syscall.h> and #define _CS300_TEST_ 362
+8. Compile
+	gcc -std=c99 -D _GNU_SOURCE -static cs300_testapp.c -o cs300_testapp
+
+9.  Run QEMU with TCP connection
+	qemu-system-i386 -m 64M -hda ../debian_squeeze_i386_standard.qcow2 -append "root=/dev/sda1 console=ttys0,115200n8 console=tty0" -kernel arch/x86/boot/bzImage  -net nic,vlan=1 -net user,vlan=1 -redir tcp:2222::22
+10. Transfer test app to QEMU
+	scp -P 2222 <cs300_testapp> root@localhost:~
+11. Run test app
+	 ./cs300_testapp
