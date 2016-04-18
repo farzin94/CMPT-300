@@ -41,17 +41,17 @@ asmlinkage long sys_array_stats(struct array_stats *stats, long data[], long siz
 		{
 			copied.min = dataCopied;
 		}
-		printk("--min %ld\n", copied.min);
+		//printk("--min %ld\n", copied.min);
 		if (copied.max < dataCopied)
 		{
 			copied.max = dataCopied;
 		}
-		printk("--max %ld\n", copied.max);
+		//printk("--max %ld\n", copied.max);
 		
 		copied.sum = (copied.sum + dataCopied);
-		printk("--sum %ld\n", copied.sum);
+		//printk("--sum %ld\n", copied.sum);
 		
-		printk("--data %ld\n", dataCopied);
+		//printk("--data %ld\n", dataCopied);
 		i++;
 	}
 	/* copy buf into dst, which is in the user’s address space */
@@ -59,9 +59,9 @@ asmlinkage long sys_array_stats(struct array_stats *stats, long data[], long siz
 	{
 		return -EFAULT;
 	}
-	printk("--STATSmax %ld\n", stats->min);
-	printk("--STATSmax %ld\n", stats->max);
-	printk("--STATSmax %ld\n", stats->sum);
+	//printk("--STATSmax %ld\n", stats->min);
+	//printk("--STATSmax %ld\n", stats->max);
+	//printk("--STATSmax %ld\n", stats->sum);
 	return result;
 }
 
