@@ -1,0 +1,22 @@
+# Define what compiler to use and the flags.
+CC=gcc
+CXX=g++
+CCFLAGS= -g -std=c99 -D _GNU_SOURCE -static 
+
+SRC = array_test.c
+
+
+# Compile all .c files into .o files
+# % matches all (like * in a command)
+# $< is the source file (.c file)
+%.o : %.c
+	$(CC) -c $(CCFLAGS) $<
+
+array_test: $(SRC)
+	$(CC) -o array_test $(CCFLAGS) $(SRC)
+
+transfer:
+	scp -P 2222 array_test root@localhost:~
+
+clean:
+	rm -f array_test *.o
