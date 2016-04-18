@@ -3,7 +3,7 @@
 #include <unistd.h>
 #include <sys/syscall.h>
 
-#define _CS300_TEST_ 362
+#define _CS300_TEST_ 332
 #define ANCESTOR_NAME_LEN 16
 
 struct process_info {
