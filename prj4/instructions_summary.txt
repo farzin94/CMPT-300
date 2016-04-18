@@ -15,7 +15,7 @@
 	gcc -std=c99 -D _GNU_SOURCE -static cs300_testapp.c -o cs300_testapp
 
 9.  Run QEMU with TCP connection
-	qemu-system-i386 -m 64M -hda ../debian_squeeze_i386_standard.qcow2 -append "root=/dev/sda1 console=ttys0,115200n8 console=tty0" -kernel arch/x86/boot/bzImage  -net nic,vlan=1 -net user,vlan=1 -redir tcp:2222::22
+	qemu-system-i386 -m 64M -hda ../debian_squeeze_i386_standard.qcow2 -append "root=/dev/sda1 console=ttys0,115200n8 console=tty0" -kernel arch/x86/boot/bzImage -net nic,vlan=1 -net user,vlan=1 -redir tcp:2222::22
 10. Transfer test app to QEMU
 	scp -P 2222 <cs300_testapp> root@localhost:~
 11. Run test app
