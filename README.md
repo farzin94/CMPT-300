@@ -1,5 +1,11 @@
-# Basic-Shell
+# C and Operating Systems Concepts - CMPT 300
 
-This is more than just a basic shell now. Also the shell is kinda broken 
+In colaboration with Alin Paunescu
 
-Also includes a candy factory which is less broken
+Project 2: A Basic Shell
+
+Project 3: Semaphores
+
+Project 4: Sys-Call 
+
+
