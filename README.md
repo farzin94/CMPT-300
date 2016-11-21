@@ -1,6 +1,6 @@
 # C and Operating Systems Concepts - CMPT 300
 
-In colaboration with Alin Paunescu
+In collaboration with Alin Paunescu
 
 Project 2: A Basic Shell
 
