@@ -1,4 +1,4 @@
-# C and Operating Systems Concepts - CMPT 300
+# C and Operating Systems Concepts
 
 In collaboration with Alin Paunescu
 
